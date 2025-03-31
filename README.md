@@ -4,3 +4,5 @@ I needed to resize an image when applying for a visa, and all the options I coul
 I am also trying to learn Rust, so this conversion from python will be an exercise for me. 
 
 If you come across this, feel free to take a look and make adjustments. 
+
+If you have rust and cargo installed, once the repo is cloned, navigate to the top directory in your terminal and run: `cargo run` which should run locally on `http://localhost:8080`

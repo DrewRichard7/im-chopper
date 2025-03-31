@@ -1,0 +1,12 @@
+[package]
+name = "im-chopper"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+actix-web = "4"
+actix-multipart = "0.4"
+futures-util = "0.3"
+tera = "1.17"
+image = { version = "0.24", features = ["webp"] }
+bytes = "1.4"

@@ -1,360 +1,370 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>IM Chopper - Interactive Image Resizer</title>
-    <!-- Favicon using SVG data URI with camera emoji -->
-    <link
-      rel="icon"
-      href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📷</text></svg>"
-    />
-    <!-- Cropper.js CSS -->
-    <link
-      href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css"
-      rel="stylesheet"
-    />
-    <style>
-      :root {
-        --base-color: #001423;
-        --highlight-color: #00cc96;
-        --secondary-highlight: #b9f3fb;
-        --text-color: #e0e0e0;
-        --input-bg: #0a2234;
-        --border-color: #1a3a50;
-        --error-bg: #4d1f24;
-        --error-text: #f8d7da;
-        --error-border: #721c24;
-      }
 
-      body {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-          Helvetica, Arial, sans-serif;
-        background-color: var(--base-color);
-        color: var(--text-color);
-        padding: 20px;
-        line-height: 1.6;
-        margin: 0;
-      }
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>IM Chopper - Interactive Image Resizer</title>
+  <!-- Favicon using SVG data URI with camera emoji -->
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📷</text></svg>" />
+  <!-- Cropper.js CSS -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css" rel="stylesheet" />
+  <style>
+    :root {
+      --base-color: #001423;
+      --highlight-color: #00cc96;
+      --secondary-highlight: #b9f3fb;
+      --text-color: #e0e0e0;
+      --input-bg: #0a2234;
+      --border-color: #1a3a50;
+      --error-bg: #4d1f24;
+      --error-text: #f8d7da;
+      --error-border: #721c24;
+    }
 
-      .container {
-        max-width: 700px;
-        margin: 20px auto;
-        background: rgba(10, 34, 52, 0.8);
-        padding: 30px;
-        border-radius: 15px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-      }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+        Helvetica, Arial, sans-serif;
+      background-color: var(--base-color);
+      color: var(--text-color);
+      padding: 20px;
+      line-height: 1.6;
+      margin: 0;
+    }
 
-      h1 {
-        color: var(--secondary-highlight);
-        text-align: center;
-        margin-bottom: 25px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-      }
-      /* Style for the emoji in the h1 */
-      h1::before {
-          content: '📷';
-          font-size: 1.2em;
-          display: inline-block;
-      }
-      h1::after {
-          content: '✂︎';
-          font-size: 1.2em;
-          display: inline-block;
-      }
-      h3 {
-        text-align: center;
-        color: var(--secondary-highlight);
-        margin-top: 0;
-        margin-bottom: 25px; /* Adjust as needed */
-      }
-      label {
-        display: block;
-        margin-bottom: 8px;
-        font-weight: 500;
-        color: var(--secondary-highlight);
-      }
+    .container {
+      max-width: 700px;
+      margin: 20px auto;
+      background: rgba(10, 34, 52, 0.8);
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    }
 
-      input[type="file"],
-      input[type="number"],
-      select,
-      button {
-        width: 100%;
-        padding: 12px 15px;
-        margin-bottom: 20px;
-        box-sizing: border-box;
-        border-radius: 8px;
-        border: 1px solid var(--border-color);
-        background-color: var(--input-bg);
-        color: var(--text-color);
-        font-size: 1rem;
-      }
+    h1 {
+      color: var(--secondary-highlight);
+      text-align: center;
+      margin-bottom: 25px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
 
-      select {
-          appearance: none;
-          background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2300CC96%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
-          background-repeat: no-repeat;
-          background-position: right 15px top 50%;
-          background-size: .65em auto;
-          padding-right: 40px;
-      }
+    /* Style for the emoji in the h1 */
+    h1::before {
+      content: '📷';
+      font-size: 1.2em;
+      display: inline-block;
+    }
 
-      input[type="file"] {
-        cursor: pointer;
-        border: 1px dashed var(--highlight-color);
-      }
-      input[type="file"]::file-selector-button {
-        background-color: var(--highlight-color);
-        color: var(--base-color);
-        border: none;
-        padding: 8px 12px;
-        border-radius: 5px;
-        cursor: pointer;
-        margin-right: 10px;
-      }
+    h1::after {
+      content: '✂︎';
+      font-size: 1.2em;
+      display: inline-block;
+    }
 
-      button {
-        background-color: var(--highlight-color);
-        color: var(--base-color);
-        border: none;
-        cursor: pointer;
-        font-weight: bold;
-        transition: background-color 0.3s ease;
-      }
+    h3 {
+      text-align: center;
+      color: var(--secondary-highlight);
+      margin-top: 0;
+      margin-bottom: 25px;
+      /* Adjust as needed */
+    }
 
-      button:hover {
-        background-color: #00a378;
-      }
-      button:disabled {
-        background-color: #555;
-        cursor: not-allowed;
-      }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: var(--secondary-highlight);
+    }
 
-      .dimensions {
-        display: flex;
-        gap: 15px;
-      }
-      .dimensions > div {
-        flex: 1;
-      }
+    input[type="file"],
+    input[type="number"],
+    select,
+    button {
+      width: 100%;
+      padding: 12px 15px;
+      margin-bottom: 20px;
+      box-sizing: border-box;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      background-color: var(--input-bg);
+      color: var(--text-color);
+      font-size: 1rem;
+    }
 
-      .image-crop-container {
-        margin-top: 20px;
-        margin-bottom: 20px;
-        max-width: 100%;
-        display: none;
-      }
+    select {
+      appearance: none;
+      background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2300CC96%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
+      background-repeat: no-repeat;
+      background-position: right 15px top 50%;
+      background-size: .65em auto;
+      padding-right: 40px;
+    }
 
-      .image-crop-container img {
-        display: block;
-        max-width: 100%;
-      }
+    input[type="file"] {
+      cursor: pointer;
+      border: 1px dashed var(--highlight-color);
+    }
 
-      .flash-messages {
-        list-style: none;
-        padding: 0;
-        margin-bottom: 20px;
-      }
-      .flash-messages li {
-        background-color: var(--error-bg);
-        color: var(--error-text);
-        border: 1px solid var(--error-border);
-        padding: 12px 15px;
-        margin-bottom: 10px;
-        border-radius: 8px;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <h1>im-chopper</h1>
-        <h3>an interactive image resizer</h3>
-      {% if messages and messages | length > 0 %}
-      <ul class="flash-messages">
-        {% for message in messages %}
-        <li>{{ message }}</li>
-        {% endfor %}
-      </ul>
-      {% endif %}
+    input[type="file"]::file-selector-button {
+      background-color: var(--highlight-color);
+      color: var(--base-color);
+      border: none;
+      padding: 8px 12px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
 
-      <form
-        id="resizeForm"
-        action="/resize"
-        method="post"
-        enctype="multipart/form-data"
-      >
-        <input type="hidden" id="cropX" name="cropX" />
-        <input type="hidden" id="cropY" name="cropY" />
-        <input type="hidden" id="cropWidth" name="cropWidth" />
-        <input type="hidden" id="cropHeight" name="cropHeight" />
+    button {
+      background-color: var(--highlight-color);
+      color: var(--base-color);
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background-color 0.3s ease;
+    }
 
+    button:hover {
+      background-color: #00a378;
+    }
+
+    button:disabled {
+      background-color: #555;
+      cursor: not-allowed;
+    }
+
+    .dimensions {
+      display: flex;
+      gap: 15px;
+    }
+
+    .dimensions>div {
+      flex: 1;
+    }
+
+    .image-crop-container {
+      margin-top: 20px;
+      margin-bottom: 20px;
+      max-width: 100%;
+      display: none;
+    }
+
+    .image-crop-container img {
+      display: block;
+      max-width: 100%;
+    }
+
+    .flash-messages {
+      list-style: none;
+      padding: 0;
+      margin-bottom: 20px;
+    }
+
+    .flash-messages li {
+      background-color: var(--error-bg);
+      color: var(--error-text);
+      border: 1px solid var(--error-border);
+      padding: 12px 15px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>im-chopper</h1>
+    <h3>an interactive image resizer</h3>
+    {% if messages and messages | length > 0 %}
+    <ul class="flash-messages">
+      {% for message in messages %}
+      <li>{{ message }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+
+    <form id="resizeForm" action="/resize" method="post" enctype="multipart/form-data">
+      <input type="hidden" id="cropX" name="cropX" />
+      <input type="hidden" id="cropY" name="cropY" />
+      <input type="hidden" id="cropWidth" name="cropWidth" />
+      <input type="hidden" id="cropHeight" name="cropHeight" />
+
+      <div>
+        <label for="file">1. Choose image:</label>
+        <input type="file" id="file" name="file" accept="image/*" required />
+      </div>
+
+      <div class="dimensions">
         <div>
-          <label for="file">1. Choose image:</label>
-          <input type="file" id="file" name="file" accept="image/*" required />
+          <label for="width">2. Target Width (px):</label>
+          <input type="number" id="width" name="width" min="1" required />
         </div>
-
-        <div class="dimensions">
-          <div>
-            <label for="width">2. Target Width (px):</label>
-            <input type="number" id="width" name="width" min="1" required />
-          </div>
-          <div>
-            <label for="height">3. Target Height (px):</label>
-            <input type="number" id="height" name="height" min="1" required />
-          </div>
-        </div>
-
         <div>
-          <label for="outputFormat">4. Choose Output Format:</label>
-          <select id="outputFormat" name="outputFormat">
-            <option value="PNG">PNG (supports transparency)</option>
-            <option value="JPEG">JPEG (best for photos, no transparency)</option>
-            <option value="WEBP">
-              WEBP (modern, good compression, supports transparency)
-            </option>
-          </select>
+          <label for="height">3. Target Height (px):</label>
+          <input type="number" id="height" name="height" min="1" required />
         </div>
+      </div>
 
-        <label>5. Adjust Crop Area:</label>
-        <div class="image-crop-container" id="cropContainer">
-          <img id="imageToCrop" src="#" alt="Image preview" />
-        </div>
+      <div>
+        <label for="outputFormat">4. Choose Output Format:</label>
+        <select id="outputFormat" name="outputFormat">
+          <option value="PNG">PNG (supports transparency)</option>
+          <option value="JPEG">JPEG (best for photos, no transparency)</option>
+          <option value="WEBP">
+            WEBP (modern, good compression, supports transparency)
+          </option>
+          {/* <!-- Added SVG Option --> */}
+          <option value="SVG">
+            SVG (vector format, scalable, requires tracing)
+          </option>
+          {/* <!-- Added EPS Option --> */}
+          <option value="EPS">
+            EPS (vector format, print, requires tracing via potrace)
+          </option>
+        </select>
+      </div>
 
-        <button type="submit" id="submitBtn" disabled>Crop & Resize</button>
-      </form>
-    </div>
+      <label>5. Adjust Crop Area:</label>
+      <div class="image-crop-container" id="cropContainer">
+        <img id="imageToCrop" src="#" alt="Image preview" />
+      </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
-    <script>
-      const imageInput = document.getElementById("file");
-      const image = document.getElementById("imageToCrop");
-      const cropContainer = document.getElementById("cropContainer");
-      const targetWidthInput = document.getElementById("width");
-      const targetHeightInput = document.getElementById("height");
-      const submitBtn = document.getElementById("submitBtn");
-      const form = document.getElementById("resizeForm");
+      <button type="submit" id="submitBtn" disabled>Crop & Resize</button>
+    </form>
+  </div>
 
-      const cropXInput = document.getElementById("cropX");
-      const cropYInput = document.getElementById("cropY");
-      const cropWidthInput = document.getElementById("cropWidth");
-      const cropHeightInput = document.getElementById("cropHeight");
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
+  <script>
+    const imageInput = document.getElementById("file");
+    const image = document.getElementById("imageToCrop");
+    const cropContainer = document.getElementById("cropContainer");
+    const targetWidthInput = document.getElementById("width");
+    const targetHeightInput = document.getElementById("height");
+    const submitBtn = document.getElementById("submitBtn");
+    const form = document.getElementById("resizeForm");
 
-      let cropper = null;
-      let currentFile = null;
-      let currentAspectRatio = NaN;
+    const cropXInput = document.getElementById("cropX");
+    const cropYInput = document.getElementById("cropY");
+    const cropWidthInput = document.getElementById("cropWidth");
+    const cropHeightInput = document.getElementById("cropHeight");
 
-      function initializeCropper() {
-        if (!currentFile || isNaN(currentAspectRatio) || currentAspectRatio <= 0) {
-          if (cropper) {
-            cropper.destroy();
-            cropper = null;
-            cropContainer.style.display = "none";
-            submitBtn.disabled = true;
-          }
-          return;
+    let cropper = null;
+    let currentFile = null;
+    let currentAspectRatio = NaN;
+
+    function initializeCropper() {
+      if (!currentFile || isNaN(currentAspectRatio) || currentAspectRatio <= 0) {
+        if (cropper) {
+          cropper.destroy();
+          cropper = null;
+          cropContainer.style.display = "none";
+          submitBtn.disabled = true;
         }
-
-        cropContainer.style.display = "block";
-        const reader = new FileReader();
-        reader.onload = function (e) {
-          image.src = e.target.result;
-          if (cropper) {
-            cropper.destroy();
-          }
-          cropper = new Cropper(image, {
-            aspectRatio: currentAspectRatio,
-            viewMode: 1,
-            dragMode: "move",
-            autoCropArea: 0.8,
-            movable: true,
-            zoomable: true,
-            rotatable: false,
-            scalable: false,
-            ready: function () {
-              updateCropData();
-              submitBtn.disabled = false;
-            },
-            crop: function (event) {
-              updateCropData();
-            }
-          });
-        };
-        reader.readAsDataURL(currentFile);
+        return;
       }
 
-      function updateCropData() {
-        if (!cropper) return;
-        const data = cropper.getData(true);
-        cropXInput.value = data.x;
-        cropYInput.value = data.y;
-        cropWidthInput.value = data.width;
-        cropHeightInput.value = data.height;
-      }
-
-      function updateAspectRatio() {
-        const width = parseInt(targetWidthInput.value, 10);
-        const height = parseInt(targetHeightInput.value, 10);
-
-        if (width > 0 && height > 0) {
-          currentAspectRatio = width / height;
-          if (cropper) {
-            cropper.setAspectRatio(currentAspectRatio);
-          } else {
-            initializeCropper();
+      cropContainer.style.display = "block";
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        image.src = e.target.result;
+        if (cropper) {
+          cropper.destroy();
+        }
+        cropper = new Cropper(image, {
+          aspectRatio: currentAspectRatio,
+          viewMode: 1,
+          dragMode: "move",
+          autoCropArea: 0.8,
+          movable: true,
+          zoomable: true,
+          rotatable: false,
+          scalable: false,
+          ready: function () {
+            updateCropData();
+            submitBtn.disabled = false;
+          },
+          crop: function (event) {
+            updateCropData();
           }
+        });
+      };
+      reader.readAsDataURL(currentFile);
+    }
+
+    function updateCropData() {
+      if (!cropper) return;
+      const data = cropper.getData(true);
+      cropXInput.value = data.x;
+      cropYInput.value = data.y;
+      cropWidthInput.value = data.width;
+      cropHeightInput.value = data.height;
+    }
+
+    function updateAspectRatio() {
+      const width = parseInt(targetWidthInput.value, 10);
+      const height = parseInt(targetHeightInput.value, 10);
+
+      if (width > 0 && height > 0) {
+        currentAspectRatio = width / height;
+        if (cropper) {
+          cropper.setAspectRatio(currentAspectRatio);
         } else {
-          currentAspectRatio = NaN;
-          if (cropper) {
-            cropper.destroy();
-            cropper = null;
-            cropContainer.style.display = "none";
-            submitBtn.disabled = true;
-          }
+          initializeCropper();
+        }
+      } else {
+        currentAspectRatio = NaN;
+        if (cropper) {
+          cropper.destroy();
+          cropper = null;
+          cropContainer.style.display = "none";
+          submitBtn.disabled = true;
         }
       }
+    }
 
-      imageInput.addEventListener("change", function (event) {
-        const files = event.target.files;
-        if (files && files.length > 0) {
-          currentFile = files[0];
-          if (!isNaN(currentAspectRatio) && currentAspectRatio > 0) {
-            initializeCropper();
-          } else {
-            if (cropper) cropper.destroy();
-            cropper = null;
-            cropContainer.style.display = "none";
-            submitBtn.disabled = true;
-          }
+    imageInput.addEventListener("change", function (event) {
+      const files = event.target.files;
+      if (files && files.length > 0) {
+        currentFile = files[0];
+        if (!isNaN(currentAspectRatio) && currentAspectRatio > 0) {
+          initializeCropper();
         } else {
-          currentFile = null;
           if (cropper) cropper.destroy();
           cropper = null;
           cropContainer.style.display = "none";
           submitBtn.disabled = true;
         }
-      });
+      } else {
+        currentFile = null;
+        if (cropper) cropper.destroy();
+        cropper = null;
+        cropContainer.style.display = "none";
+        submitBtn.disabled = true;
+      }
+    });
 
-      targetWidthInput.addEventListener("input", updateAspectRatio);
-      targetHeightInput.addEventListener("input", updateAspectRatio);
+    targetWidthInput.addEventListener("input", updateAspectRatio);
+    targetHeightInput.addEventListener("input", updateAspectRatio);
 
-      form.addEventListener("submit", function (event) {
-        if (!cropper || !currentFile) {
-          alert("Please select an image and set valid dimensions first.");
-          event.preventDefault();
-          return;
-        }
-        updateCropData();
-        if (parseFloat(cropWidthInput.value) <= 0 ||
-            parseFloat(cropHeightInput.value) <= 0) {
-          alert("Invalid crop area selected. Please adjust the crop box.");
-          event.preventDefault();
-          return;
-        }
-      });
-    </script>
-  </body>
+    form.addEventListener("submit", function (event) {
+      if (!cropper || !currentFile) {
+        alert("Please select an image and set valid dimensions first.");
+        event.preventDefault();
+        return;
+      }
+      updateCropData();
+      if (parseFloat(cropWidthInput.value) <= 0 ||
+        parseFloat(cropHeightInput.value) <= 0) {
+        alert("Invalid crop area selected. Please adjust the crop box.");
+        event.preventDefault();
+        return;
+      }
+    });
+  </script>
+</body>
+
 </html>

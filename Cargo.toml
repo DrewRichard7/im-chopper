@@ -1,12 +1,23 @@
 [package]
-name = "im-chopper"
+name = "image_resizer"
 version = "0.1.0"
 edition = "2024"
 
 [dependencies]
 actix-web = "4"
-actix-multipart = "0.4"
+actix-multipart = "0.6" # Or your current version
+tera = "1"
+image = { version = "0.24", features = ["png", "jpeg", "webp", "pnm", "bmp"] }
 futures-util = "0.3"
-tera = "1.17"
-image = { version = "0.24", features = ["webp"] }
-bytes = "1.4"
+bytes = "1"
+log = "0.4" # Optional, but good for logging errors
+env_logger = "0.10" # Optional, for simple logging setup
+
+# --- Added for Vectorization ---
+tempfile = "3" # For creating temporary files for potrace
+# --- End Added ---
+
+# --- Added for SVG Embedding (if you still wanted that as fallback/option) ---
+# base64 = "0.21"
+# --- End Added ---
+
